@@ -15,7 +15,6 @@ export default function Vote({ searchParams }: VotePageProps) {
 
   const catId = Array.isArray(rawCatId) ? rawCatId[0] : rawCatId;
   const imageUrl = Array.isArray(rawImageUrl) ? rawImageUrl[0] : rawImageUrl;
-  const [voteCount, setVoteCount] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
