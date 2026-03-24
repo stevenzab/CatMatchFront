@@ -1,22 +1,28 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useState, useEffect } from "react";
 
+type Cat = {
+  id: string;
+  url: string;
+};
+
 export default function CatCard() {
-  const [data, setData] = useState([]);
+  const [data, setData] = useState<Cat[]>([]);
 
   useEffect(() => {
     const fetchCats = async () => {
       try {
         const response = await fetch("https://localhost:7269/api/CatMatch/GetAllCat");
-        
+
         if (!response.ok) {
           console.error(`API error: ${response.status} ${response.statusText}`);
           return;
         }
         
-        const cats = await response.json();
+        const cats: Cat[] = await response.json();
         setData(cats);
       } catch (error) {
         console.error("Failed to fetch cats:", error);
@@ -28,24 +34,28 @@ export default function CatCard() {
     <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
       <h1 className="text-3xl font-bold mb-4">All Cats</h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-        {data.map((cat: any) => {
-          let imageUrl = cat;
-          
-          if (cat.url) {
-            if (cat.url.startsWith('http')) {
-              imageUrl = cat.url;
-            }
-          }          
+        {data.map((cat) => {
+          const imageUrl = cat.url;
+
+          const voteQuery = new URLSearchParams({
+            catId: String(cat.id),
+            imageUrl,
+          }).toString();
+
           return (
-          <div key={cat.id} className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
-            <Image
-              src={imageUrl}
-              alt="Cat Image"
-              width={300}
-              height={500}
-              className="w-full h-48 object-cover rounded"
-            />
-          </div>
+            <Link
+              key={cat.id}
+              href={`/vote?${voteQuery}`}
+              className="block bg-white dark:bg-gray-800 p-4 rounded-lg shadow transition-transform hover:scale-[1.02]"
+            >
+              <Image
+                src={imageUrl}
+                alt={`Cat ${cat.id}`}
+                width={300}
+                height={500}
+                className="w-full h-48 object-cover rounded"
+              />
+            </Link>
           );
         })}
       </div>
