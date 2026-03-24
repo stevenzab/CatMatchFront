@@ -14,8 +14,48 @@ export default function Vote({ searchParams }: VotePageProps) {
 
   const catId = Array.isArray(rawCatId) ? rawCatId[0] : rawCatId;
   const imageUrl = Array.isArray(rawImageUrl) ? rawImageUrl[0] : rawImageUrl;
-  const [vote, setVote] = useState<"like" | "dislike" | null>(null);
-	console.log(window.location.href);
+  const [voteCount, setVoteCount] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSubmitVote = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const vote = voteCount + 1;
+      const response = await fetch("https://localhost:7269/api/CatMatch/VoteCat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: catId,
+					url: imageUrl,
+          vote: vote,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.title || "Erreur lors du vote");
+      }
+
+      setVoteCount(vote);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erreur inconnue");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (!catId || !imageUrl) {
+    return (
+      <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
+          Aucun chat sélectionné. Retourne à l'accueil et clique sur une image.
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
@@ -31,22 +71,24 @@ export default function Vote({ searchParams }: VotePageProps) {
         <div className="mt-4 flex gap-3">
           <button
             type="button"
-            onClick={() => setVote("like")}
-            className="px-4 py-2 rounded bg-emerald-600 text-white hover:bg-emerald-700"
+            onClick={() => handleSubmitVote()}
+            disabled={loading}
+            className="px-4 py-2 rounded bg-emerald-600 text-white hover:bg-emerald-700 disabled:opacity-50"
           >
-            Like
+            {loading ? "Vote en cours..." : "Like"}
           </button>
           <button
             type="button"
-            onClick={() => setVote("dislike")}
-            className="px-4 py-2 rounded bg-rose-600 text-white hover:bg-rose-700"
+            onClick={() => handleSubmitVote()}
+            disabled={loading}
+            className="px-4 py-2 rounded bg-rose-600 text-white hover:bg-rose-700 disabled:opacity-50"
           >
-            Dislike
+            {loading ? "Vote en cours..." : "Dislike"}
           </button>
         </div>
-        {vote && (
-          <p className="mt-4 text-lg font-semibold text-gray-800 dark:text-gray-100">
-            Ton vote: {vote === "like" ? "Like" : "Dislike"}
+        {error && (
+          <p className="mt-4 text-lg font-semibold text-red-600">
+            Erreur: {error}
           </p>
         )}
       </>
