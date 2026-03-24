@@ -79,7 +79,7 @@ export default function Vote({ searchParams }: VotePageProps) {
           </button>
           <button
             type="button"
-            onClick={() => handleSubmitVote()}
+            // onClick={() => handleSubmitVote()}
             disabled={loading}
             className="px-4 py-2 rounded bg-rose-600 text-white hover:bg-rose-700 disabled:opacity-50"
           >
