@@ -53,10 +53,10 @@ export default function CatCard() {
                 src={imageUrl}
                 alt={`Cat ${cat.id}`}
                 width={300}
-                height={500}
+                height={300}
                 className="w-full h-48 object-cover rounded"
               />
-							<p className="flex justify-center text-center">Score {cat.vote} pts</p>
+							<p className="flex justify-center text-center mt-5 lg:text-2xl">Score {cat.vote} pts</p>
             </Link>
           );
         })}
