@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 type Cat = {
   id: string;
   url: string;
+	vote: number;
 };
 
 export default function CatCard() {
@@ -55,6 +56,7 @@ export default function CatCard() {
                 height={500}
                 className="w-full h-48 object-cover rounded"
               />
+							<p className="flex justify-center text-center">Score {cat.vote} pts</p>
             </Link>
           );
         })}
