@@ -42,6 +42,13 @@ export default function Vote({ searchParams }: VotePageProps) {
 		fetchCat().catch((e) => setError(e.message));
 	}, [catId]);
 
+	const handleDislikeVote = () => {
+		try {
+			handleSubmitVote(-1);
+		} catch (error) {
+			setError(error instanceof Error ? error.message : "Erreur inconnue");
+		}
+	}
 
   const handleSubmitVote = async (delta: 1 | -1) => {
   setLoading(true);
@@ -101,7 +108,7 @@ export default function Vote({ searchParams }: VotePageProps) {
           </button>
           <button
             type="button"
-            // onClick={() => handleSubmitVote()}
+            onClick={() => handleDislikeVote()}
             disabled={loading}
             className="px-4 py-2 rounded bg-rose-600 text-white hover:bg-rose-700 disabled:opacity-50"
           >
