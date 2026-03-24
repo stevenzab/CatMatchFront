@@ -50,7 +50,7 @@ export default function Vote({ searchParams }: VotePageProps) {
 		}
 	}
 
-  const handleSubmitVote = async (delta: 1 | -1) => {
+  const handleSubmitVote = async (voteCat: 1 | -1) => {
   setLoading(true);
   setError(null);
 
@@ -61,7 +61,7 @@ export default function Vote({ searchParams }: VotePageProps) {
 				body: JSON.stringify({
 					id: catId,
 					url: imageUrl,
-					vote: delta,
+					vote: voteCat,
 				}),
 			});
 
