@@ -8,6 +8,12 @@ type VotePageProps = {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 };
 
+type Cat = {
+  id: string;
+  url: string;
+	vote: number;
+};
+
 export default function Vote({ searchParams }: VotePageProps) {
   const params = use(searchParams);
   const rawCatId = params.catId;
@@ -18,7 +24,7 @@ export default function Vote({ searchParams }: VotePageProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-	const [data, setData] = useState([]);
+	const [data, setData] = useState<Cat | null>(null);
 
 	const fetchCat = async () => {
 		if (!catId) return;
