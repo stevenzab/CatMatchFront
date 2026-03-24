@@ -1,7 +1,8 @@
 "use client";
 
+import Link from "next/dist/client/link";
 import Image from "next/image";
-import { use, useState } from "react";
+import { use, useEffect, useState } from "react";
 
 type VotePageProps = {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -18,36 +19,52 @@ export default function Vote({ searchParams }: VotePageProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmitVote = async () => {
-    setLoading(true);
-    setError(null);
+	const [data, setData] = useState([]);
 
-    try {
-      const vote = voteCount + 1;
-      const response = await fetch("https://localhost:7269/api/CatMatch/VoteCat", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          id: catId,
+	const fetchCat = async () => {
+		if (!catId) return;
+		try {
+			const response = await fetch(`https://localhost:7269/api/CatMatch/GetCatById/${catId}`);
+			if (!response.ok) throw new Error("Erreur GetCatById");
+			const cat = await response.json();
+			setData(cat);
+		} catch (error) {
+			setError(error instanceof Error ? error.message : "Erreur inconnue");
+		}
+	};
+
+	useEffect(() => {
+		fetchCat().catch((e) => setError(e.message));
+	}, [catId]);
+
+
+  const handleSubmitVote = async (delta: 1 | -1) => {
+  setLoading(true);
+  setError(null);
+
+  try {
+			const response = await fetch("https://localhost:7269/api/CatMatch/VoteCat", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					id: catId,
 					url: imageUrl,
-          vote: vote,
-        }),
-      });
+					vote: delta,
+				}),
+			});
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.title || "Erreur lors du vote");
-      }
+			if (!response.ok) {
+				const errorData = await response.json();
+				throw new Error(errorData.title || "Erreur lors du vote");
+			}
 
-      setVoteCount(vote);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Erreur inconnue");
-    } finally {
-      setLoading(false);
-    }
-  };
+			await fetchCat();
+		} catch (err) {
+			setError(err instanceof Error ? err.message : "Erreur inconnue");
+		} finally {
+			setLoading(false);
+		}
+	};
 
   if (!catId || !imageUrl) {
     return (
@@ -71,7 +88,7 @@ export default function Vote({ searchParams }: VotePageProps) {
         <div className="mt-4 flex gap-3">
           <button
             type="button"
-            onClick={() => handleSubmitVote()}
+            onClick={() => handleSubmitVote(1)}
             disabled={loading}
             className="px-4 py-2 rounded bg-emerald-600 text-white hover:bg-emerald-700 disabled:opacity-50"
           >
@@ -85,7 +102,15 @@ export default function Vote({ searchParams }: VotePageProps) {
           >
             {loading ? "Vote en cours..." : "Dislike"}
           </button>
+					<Link href="/" className="px-4 py-2 rounded bg-gray-600 text-white hover:bg-gray-700">
+						<button>
+							Back
+						</button>
+					</Link>
         </div>
+					<p>
+						Score actuel: {data?.vote ?? 0} pts
+					</p>
         {error && (
           <p className="mt-4 text-lg font-semibold text-red-600">
             Erreur: {error}
