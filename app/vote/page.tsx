@@ -29,7 +29,7 @@ export default function Vote({ searchParams }: VotePageProps) {
 	const fetchCat = async () => {
 		if (!catId) return;
 		try {
-			const response = await fetch(`https://localhost:7269/api/CatMatch/GetCatById/${catId}`);
+			const response = await fetch(`https://catmatch-dwgtdxf8dffwepa6.francecentral-01.azurewebsites.net/api/CatMatch/GetCatById/${catId}`);
 			if (!response.ok) throw new Error("Erreur GetCatById");
 			const cat = await response.json();
 			setData(cat);
@@ -55,7 +55,7 @@ export default function Vote({ searchParams }: VotePageProps) {
   setError(null);
 
   try {
-			const response = await fetch("https://localhost:7269/api/CatMatch/VoteCat", {
+			const response = await fetch("https://catmatch-dwgtdxf8dffwepa6.francecentral-01.azurewebsites.net/api/CatMatch/VoteCat", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({
