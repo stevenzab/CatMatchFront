@@ -16,7 +16,7 @@ export default function CatCard() {
   useEffect(() => {
     const fetchCats = async () => {
       try {
-        const response = await fetch("https://catmatch-dwgtdxf8dffwepa6.francecentral-01.azurewebsites.net/api/CatMatch/GetAllCat");
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_GETALLCATS}`);
 
         if (!response.ok) {
           console.error(`API error: ${response.status} ${response.statusText}`);
